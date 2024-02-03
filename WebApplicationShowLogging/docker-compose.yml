@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  webapplicationshowlogging:
+    image: ${DOCKER_REGISTRY-}webapplicationshowlogging
+    build:
+      context: .
+      dockerfile: WebApplicationShowLogging/Dockerfile
