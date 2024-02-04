@@ -43,7 +43,9 @@ namespace WebApplicationShowLogging.Controllers
         {
             var test = "Test message";
 
-            _logger.LogTrace("Trace");
+            _logger.Log(LogLevel.Trace,"Trace- Трассировка");
+
+            _logger.LogTrace("Trace- Трассировка");
             _logger.LogDebug("Debug");
             _logger.LogWarning("Warning");
             _logger.LogInformation("Information");

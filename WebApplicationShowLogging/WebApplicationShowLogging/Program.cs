@@ -1,3 +1,4 @@
+using WebApplicationShowLogging.Infrasturcture;
 using WebApplicationShowLogging.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<LifetimeEventsHostedService>();
+// Register custom logger
+builder.Services.AddSingleton(typeof(ILogger<>), typeof(MyCustomLogger<>));
+//builder.Services.AddLogging();
+
 
 //logging level
 builder.Logging.SetMinimumLevel(LogLevel.Trace);
