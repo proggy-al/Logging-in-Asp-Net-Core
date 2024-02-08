@@ -1,0 +1,87 @@
+version: '3.7'
+
+services:
+  webapplicationelk:
+    image: ${DOCKER_REGISTRY-}webapplicationelk
+    build:
+      context: .
+      dockerfile: WebApplicationELK/Dockerfile
+    ports:
+      - "3100:80"
+    networks:
+      - elk-demo
+
+  elasticsearch-demo:
+    image: elasticsearch:7.16.2
+    container_name: elasticsearch-demo
+    restart: always
+    volumes:
+    - elastic_data:/usr/share/elasticsearch/data/
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node    
+    ports:
+    - '9233:9200'
+    - '9333:9300'
+    networks:
+      - elk-demo
+
+  #logstash-demo:
+  #  image: logstash:7.16.2
+  #  container_name: logstash-demo
+  #  restart: always
+  #  volumes:
+  #  - ./logstash/:/logstash_dir
+  #  command: logstash -f /logstash_dir/logstash.conf 
+  #  depends_on:
+  #    - elasticsearch-demo
+  #  ports:
+  #  - '9633:9600'
+  #  environment:
+  #    LS_JAVA_OPTS: "-Xmx256m -Xms256m"    
+  #    XPACK_MANAGEMENT_ENABLED: "true"
+  #    XPACK_MANAGEMENT_ELASTICSEARCH_HOSTS: "http://elasticsearch-demo:9200/"
+  #    XPACK_MONITORING_ENABLED: "false"
+  #  networks:
+  #    - elk-demo
+
+  kibana-demo:
+    image: kibana:7.16.2
+    container_name: kibana-demo
+    restart: always       
+    ports:
+    - '5633:5601'
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-demo:9200
+    depends_on:
+      - elasticsearch-demo  
+    networks:
+      - elk-demo
+
+  apm-server:
+    image: elastic/apm-server:7.16.2
+    container_name: apm-demo
+    depends_on:
+      - elasticsearch-demo
+      - kibana-demo
+    cap_add: ["CHOWN","DAC_OVERRIDE","SETGID","SETUID"] 
+    cap_drop: ["ALL"]
+    ports:
+      - 8233:8200
+    networks:
+      - elk-demo
+    command: >
+      apm-server -e
+         -E apm-server.rum.enabled=true
+         -E setup.kibana.host=kibana-demo:5601
+         -E setup.template.settings.index.number_of_replicas=0
+         -E apm-server.kibana.enabled=true
+         -E apm-server.kibana.host=kibana-demo:5601
+         -E output.elasticsearch.hosts=["elasticsearch-demo:9200"]
+
+volumes:
+  elastic_data: {}
+
+networks:
+  elk-demo:
+
