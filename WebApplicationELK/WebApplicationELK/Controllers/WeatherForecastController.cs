@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using WebApplicationELK.Extension;
 using WebApplicationELK.Infrastructure;
 using WebApplicationELK.Services;
@@ -70,6 +71,22 @@ namespace WebApplicationELK.Controllers
             return test;
         }
 
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <returns></returns>
+        [HttpGet("[action]", Name = "Request another service")]
+        public async Task<string> RequestAnotherService()
+        {
+                var client = new HttpClient();
+                var raw = await client.GetStringAsync("http://service2/");
+            await Task.Delay(1000);
+
+                return $"Ответ: {raw}";
+        }
+
+
+
         /// <summary>
         ///  App lifetime
         /// </summary>
@@ -80,6 +97,11 @@ namespace WebApplicationELK.Controllers
             _applicationLifetime.StopApplication();
             return new EmptyResult();
         }
+
+
+
+
+
 
         [LoggerMessage(Level = LogLevel.Information, EventId = 1, Message = "Custom message -  {Description}.")]
         static partial void LogAttributeExampleMessage(ILogger logger, string description);

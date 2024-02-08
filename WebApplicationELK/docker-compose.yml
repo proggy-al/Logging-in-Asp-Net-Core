@@ -10,6 +10,17 @@ services:
       - "3100:80"
     networks:
       - elk-demo
+  
+  service2:
+    image: ${DOCKER_REGISTRY-}service2
+    container_name: service2
+    build:
+      context: .
+      dockerfile: Service2/Dockerfile
+    ports:
+      - "3200:80"
+    networks:
+      - elk-demo
 
   elasticsearch-demo:
     image: elasticsearch:7.16.2
