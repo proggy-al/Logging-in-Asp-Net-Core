@@ -17,6 +17,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// Register custom logger
+//builder.Services.AddSingleton(typeof(ILogger<>), typeof(MyCustomLogger<>));
+
 //serilog
 var customRules = new List<ISanitizingFormatRule> { new DemoSanitzingRule() }; //example of sanitizing
 var logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration)
